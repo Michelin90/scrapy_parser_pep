@@ -2,20 +2,23 @@ import csv
 import datetime
 from collections import defaultdict
 
+from scrapy import Spider
+
+from .items import PepParseItem
 from .settings import BASE_DIR, DT_FORMAT
 
 
 class PepParsePipeline:
-    def open_spider(self, spider):
+    def open_spider(self, spider: Spider) -> None:
         self.res = defaultdict(int)
         self.total = 0
 
-    def process_item(self, item, spider):
+    def process_item(self, item: PepParseItem, spider: Spider) -> PepParseItem:
         self.res[item['status']] += 1
         self.total += 1
         return item
 
-    def close_spider(self, spider):
+    def close_spider(self, spider: Spider) -> None:
         res_list = [(k, v) for k, v in self.res.items()]
         res_dir = BASE_DIR / 'results'
         res_dir.mkdir(exist_ok=True)
